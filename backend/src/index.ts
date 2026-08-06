@@ -1,13 +1,28 @@
-import { add } from "./config/utils";
-import { TestInterface } from './config/utils/index';
+import { environments } from "./config/envs/envs";
+import { AppRoutes } from "./routes";
+import { Server } from "./server";
 
+import { connectoToDB } from "./config/db";
 
-const af: TestInterface = {
-    name: ''
-}
+const { PORT } = environments;
 
-console.log({af});
+(async () => {
 
-console.log("hello world");
+    try {
 
-console.log(add(10))
+        await connectoToDB();
+
+        const server: Server = new Server({
+            PORT,
+            PUBLIC_PATH: 'public',
+            ROUTES: AppRoutes.routes
+        });
+
+        server.start();
+
+    } catch (error) {
+        console.log(error);
+        process.exit(1);
+    }
+
+})();

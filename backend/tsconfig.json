@@ -10,7 +10,9 @@
     "sourceMap": true,
     "esModuleInterop": true,
     "declaration": true,
-    "types": ["node"]
+    "types": ["node"],
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true
   },
   "include": ["src/**/*.ts"]
 }
