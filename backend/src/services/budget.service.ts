@@ -3,6 +3,7 @@ import Budget from "../models/Budget";
 import { IBudgetRepository } from "../repositories/interfaces/budget.repository.interface";
 import { IBudgetService } from "./interfaces/budget.service.interface";
 import { FilterBudgetDto } from "../dtos/budget/filter-budget.dto";
+import { CustomError } from "../errors/CustomError";
 
 export class BudgetService implements IBudgetService {
   private readonly budgetRepository: IBudgetRepository;
@@ -31,7 +32,12 @@ export class BudgetService implements IBudgetService {
     return await this.budgetRepository.getAllBudgets(filterDto);
   };
 
-  getBudgetById: (id: number) => Promise<Budget | null>;
+  getBudgetById = async(id: number):  Promise<Budget> => {
+    
+    const budget = await this.budgetRepository.getBudgetById(id);
+    if(!budget) throw new CustomError(404, `The budget with id '${id}' was not found.`); //business rule, Serives should throw CustomError
+    return budget;
+  };
 
   updateBudgetById: (id: number, data?: any) => Promise<Budget | null>;
   deleteBudgetById: (id: number) => Promise<Budget>;

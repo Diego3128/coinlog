@@ -18,8 +18,8 @@ export class BudgetController {
         try {
             const [error, filterBudgetDto] = FilterBudgetDto.create(req.query);
             if(error) throw error;
-            const result = await this.budgetService.getAllBudgets(filterBudgetDto)
-            return res.json({ result });
+            const data = await this.budgetService.getAllBudgets(filterBudgetDto)
+            return res.status(200).json({ data });
         } catch (error) {
             this.handleError(error, res);
         }
@@ -43,8 +43,8 @@ export class BudgetController {
         try {
             const [error, getBudgetByIdDto] = GetBudgetByIdDto.create(req.params);
             if (error) throw error;
-            const result = await this.budgetService.getBudgetById(getBudgetByIdDto.id);
-            return res.json({ result });
+            const data = await this.budgetService.getBudgetById(getBudgetByIdDto.id);
+            return res.json({ data });
         } catch (error) {
             this.handleError(error, res);
         }

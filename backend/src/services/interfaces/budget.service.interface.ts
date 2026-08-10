@@ -14,7 +14,7 @@ export interface IBudgetService {
     };
   }>;
   createBudget: (data: CreateBudgetDto) => Promise<Budget>;
-  getBudgetById: (id: number) => Promise<Budget | null>;
+  getBudgetById: (id: number) => Promise<Budget>;
   updateBudgetById: (id: number, data?: any) => Promise<Budget | null>;
   deleteBudgetById: (id: number) => Promise<Budget>;
 }
