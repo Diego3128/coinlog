@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { BudgetRoutes } from "./budget/budget.routes";
+import { BudgetRoutes } from "./budget.routes";
 
 export class AppRoutes {
 

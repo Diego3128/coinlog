@@ -1,5 +1,8 @@
+import { CreateBudgetDto } from "../dtos/budget/create-budget.dto";
+import Budget from "../models/Budget";
 import { IBudgetRepository } from "../repositories/interfaces/budget.repository.interface";
 import { IBudgetService } from "./interfaces/budget.service.interface";
+import { FilterBudgetDto } from '../dtos/budget/filter-budget.dto';
 
 export class BudgetService implements IBudgetService {
 
@@ -11,15 +14,20 @@ export class BudgetService implements IBudgetService {
         this.budgetRepository = budgetRepository;
     }
 
-    getAllBudgets = async (): Promise<string> => {
-        //business logic
-        return await this.budgetRepository.getAllBudgets()
+    createBudget = async (data: CreateBudgetDto): Promise<Budget> => {
+        return await this.budgetRepository.createBudget(data);
     }
 
-    createBudget = async (): Promise<string> => {
+    getAllBudgets = async (filterDto: FilterBudgetDto): Promise<{ rows: Budget[];count: number;}> => {
         //business logic
-        return await this.budgetRepository.createBudget();
+        return await this.budgetRepository.getAllBudgets(filterDto)
     }
+
+    getBudgetById: (id: number) => Promise<Budget | null>;
+
+    updateBudgetById: (id: number, data?: any) => Promise<Budget | null>;
+    deleteBudgetById: (id: number) => Promise<Budget>;
+
 
 
 }

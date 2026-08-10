@@ -1,1 +1,1 @@
-## repositories.interfaces: Define the operations the repository will be able to perform agains the database.
+## repositories.interfaces: Define the operations the repository will be able to perform against the database.
