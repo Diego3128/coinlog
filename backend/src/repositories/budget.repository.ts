@@ -3,6 +3,7 @@ import { CreateBudgetDto } from "../dtos/budget/create-budget.dto";
 import { FilterBudgetDto } from "../dtos/budget/filter-budget.dto";
 import Budget, { BudgetAttributes } from "../models/Budget";
 import { IBudgetRepository } from "./interfaces/budget.repository.interface";
+import { UpdateBudgetDto } from "../dtos/budget/update-budget.dto";
 
 export class BudgetRepository implements IBudgetRepository {
   getBudgetById = (id: number): Promise<Budget> => {
@@ -11,7 +12,7 @@ export class BudgetRepository implements IBudgetRepository {
     const budget = Budget.findByPk(id);
     return budget;
   };
-  updateBudgetById: (id: number, data?: any) => Promise<Budget | null>;
+
   deleteBudgetById: (id: number) => Promise<Budget>;
 
   createBudget = async (dto: CreateBudgetDto): Promise<Budget> => {
@@ -58,5 +59,20 @@ export class BudgetRepository implements IBudgetRepository {
         totalCount,
       },
     };
+  };
+
+  updateBudgetById = async (
+    id: number,
+    data: UpdateBudgetDto,
+  ): Promise<Budget> => {
+    console.log(
+      "TODO: updateBudgetById() When having the users, check if the budget exists first and if it belongs to the user",
+    );
+    const newValues = data.values;
+    // const budget = Budget.findOne({where: {id: id, userId: userId}});
+    const budget = await Budget.findByPk(id);
+    if (!budget) return null;
+    await budget.update(newValues);
+    return budget;
   };
 }

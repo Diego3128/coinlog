@@ -4,6 +4,7 @@ import { IBudgetRepository } from "../repositories/interfaces/budget.repository.
 import { IBudgetService } from "./interfaces/budget.service.interface";
 import { FilterBudgetDto } from "../dtos/budget/filter-budget.dto";
 import { CustomError } from "../errors/CustomError";
+import { UpdateBudgetDto } from "../dtos/budget/update-budget.dto";
 
 export class BudgetService implements IBudgetService {
   private readonly budgetRepository: IBudgetRepository;
@@ -32,13 +33,30 @@ export class BudgetService implements IBudgetService {
     return await this.budgetRepository.getAllBudgets(filterDto);
   };
 
-  getBudgetById = async(id: number):  Promise<Budget> => {
-    
+  getBudgetById = async (id: number): Promise<Budget> => {
     const budget = await this.budgetRepository.getBudgetById(id);
-    if(!budget) throw new CustomError(404, `The budget with id '${id}' was not found.`); //business rule, Serives should throw CustomError
+    if (!budget)
+      throw new CustomError(404, `The budget with id '${id}' was not found.`); //business rule, Services throw CustomError
     return budget;
   };
 
-  updateBudgetById: (id: number, data?: any) => Promise<Budget | null>;
+  updateBudgetById = async (
+    id: number,
+    updateBudgetDto: UpdateBudgetDto,
+  ): Promise<Budget> => {
+    try {
+      //business rule. check if budget exists
+      const budget = await this.budgetRepository.updateBudgetById(
+        id,
+        updateBudgetDto,
+      );
+      if (!budget) throw CustomError.notFound(`Budget with id '${id}' not found`);
+      return budget;
+    } catch (error) {
+      // console.log({ error });
+      throw error;
+    }
+  };
+
   deleteBudgetById: (id: number) => Promise<Budget>;
 }
