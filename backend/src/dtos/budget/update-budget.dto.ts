@@ -26,7 +26,7 @@ export class UpdateBudgetDto {
       validatedName = name.trim();
     }
 
-    // Validar 'amount' solo si está presente
+    // Validar 'amount' if exists
     let validatedAmount: number | undefined;
     if (amount !== undefined) {
       const parsedAmount = Number(amount);

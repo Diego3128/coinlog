@@ -13,8 +13,6 @@ export class BudgetRepository implements IBudgetRepository {
     return budget;
   };
 
-  deleteBudgetById: (id: number) => Promise<Budget>;
-
   createBudget = async (dto: CreateBudgetDto): Promise<Budget> => {
     return Budget.create({
       name: dto.name,
@@ -74,5 +72,13 @@ export class BudgetRepository implements IBudgetRepository {
     if (!budget) return null;
     await budget.update(newValues);
     return budget;
+  };
+
+  deleteBudgetById = async (id: number): Promise<Budget> => {
+    const budget = await Budget.findByPk(id);
+    if (budget) {
+      await budget.destroy();
+    }
+    return budget || null;
   };
 }

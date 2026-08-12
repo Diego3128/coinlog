@@ -21,5 +21,5 @@ export interface IBudgetRepository {
 
     updateBudgetById: (id: number, data: UpdateBudgetDto) => Promise<Budget>
 
-    deleteBudgetById: (id: number) => Promise<Budget>
+    deleteBudgetById: (id: number) => Promise<Budget | null>
 }

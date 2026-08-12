@@ -50,7 +50,8 @@ export class BudgetService implements IBudgetService {
         id,
         updateBudgetDto,
       );
-      if (!budget) throw CustomError.notFound(`Budget with id '${id}' not found`);
+      if (!budget)
+        throw CustomError.notFound(`Budget with id '${id}' not found`);
       return budget;
     } catch (error) {
       // console.log({ error });
@@ -58,5 +59,16 @@ export class BudgetService implements IBudgetService {
     }
   };
 
-  deleteBudgetById: (id: number) => Promise<Budget>;
+  deleteBudgetById = async (id: number): Promise<Budget> => {
+    try {
+      //business rule. check if budget exists
+      const budget = await this.budgetRepository.deleteBudgetById(id);
+      if (!budget)
+        throw CustomError.notFound(`Budget with id '${id}' not found`);
+      return budget;
+    } catch (error) {
+      // console.log({ error });
+      throw error;
+    }
+  };
 }

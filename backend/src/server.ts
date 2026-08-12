@@ -2,7 +2,7 @@ import express, { Router } from "express";
 import { ColoredLog } from "./config/adapters/colors.adapter";
 import cors from "cors";
 import { corsOptions } from "./config/cors/cors";
-import { globalLimiter } from "./config/middleware/rate-limiter.middleware";
+import { globalLimiter } from "./middleware/rate-limiter.middleware";
 
 interface ServerOptions {
   PORT: number;

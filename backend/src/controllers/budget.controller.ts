@@ -1,11 +1,9 @@
 // Express handlers for Budget endpoints
 import { type Request, type Response } from 'express';
 import { IBudgetService } from '../services/interfaces/budget.service.interface';
-import { GetBudgetByIdDto } from '../dtos/budget/get-budget-by-id.dto';
 import { CustomError } from '../errors/CustomError';
-import { CreateBudgetDto } from '../dtos/budget/create-budget.dto';
-import { FilterBudgetDto } from '../dtos/budget/filter-budget.dto';
-import { UpdateBudgetDto } from '../dtos/budget/update-budget.dto';
+import { CreateBudgetDto, UpdateBudgetDto, FilterBudgetDto } from '../dtos';
+import { BudgetIdRequest } from '../types/BudgetIdRequest';
 
 export class BudgetController {
 
@@ -40,11 +38,10 @@ export class BudgetController {
 
     }
 
-    getBudgetById = async (req: Request, res: Response) => {
+    getBudgetById = async (req: BudgetIdRequest, res: Response) => {
         try {
-            const [error, getBudgetByIdDto] = GetBudgetByIdDto.create(req.params);
-            if (error) throw error;
-            const data = await this.budgetService.getBudgetById(getBudgetByIdDto.id);
+            const budgetId = req.budgetId;
+            const data = await this.budgetService.getBudgetById(budgetId);
             return res.json({ data });
         } catch (error) {
             this.handleError(error, res);
@@ -52,21 +49,13 @@ export class BudgetController {
 
     }
 
-    updateBudgetById = async (req: Request, res: Response) => {
+    updateBudgetById = async (req: BudgetIdRequest, res: Response) => {
         try {
-            const [idError, getBudgetByIdDto] = GetBudgetByIdDto.create(req.params);
             const [budgetError, updateBudgetDto] = UpdateBudgetDto.create(req.body);
-
-            //todo: create DTO for the body
-            if (idError) throw idError;
+            const budgetId = req.budgetId;
             if (budgetError) throw budgetError;
 
-            console.log({idError, budgetError, getBudgetByIdDto, updateBudgetDto});
-
-            const result = await this.budgetService.updateBudgetById(getBudgetByIdDto.id, updateBudgetDto);
-
-            console.log({result});
-
+            const result = await this.budgetService.updateBudgetById(budgetId, updateBudgetDto);
             return res.json({ result });
         } catch (error) {
             this.handleError(error, res);
@@ -74,11 +63,10 @@ export class BudgetController {
 
     }
 
-    deleteBudgetById = async (req: Request, res: Response) => {
+    deleteBudgetById = async (req: BudgetIdRequest, res: Response) => {
         try {
-            const [error, getBudgetByIdDto] = GetBudgetByIdDto.create(req.params);
-            if (error) throw error;
-            const result = await this.budgetService.deleteBudgetById(getBudgetByIdDto.id);
+            const budgetId = req.budgetId;
+            const result = await this.budgetService.deleteBudgetById(budgetId);
             return res.json({ result });
         } catch (error) {
             this.handleError(error, res);
