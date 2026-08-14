@@ -31,7 +31,7 @@ export class BudgetController {
             if (error) throw error;
 
             const budget = await this.budgetService.createBudget(createBudgetDto);
-            return res.status(201).json({ budget });
+            return res.status(201).json( budget);
         } catch (error) {
             this.handleError(error, res);
         }
