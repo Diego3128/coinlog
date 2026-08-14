@@ -41,7 +41,7 @@ export class Server {
     // json-parsing middleware
     this.app.use(express.json());
     // form-encoded middleware
-    this.app.use(express.urlencoded());
+    this.app.use(express.urlencoded({extended: true}));
 
     // app routes
     this.app.use("/api/v1", this.routes);

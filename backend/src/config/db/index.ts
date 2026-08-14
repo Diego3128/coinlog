@@ -27,8 +27,9 @@ export const connectoToDB = async () => {
     try {
         await sequelize.authenticate();
         if(!PROD){
-            ColoredLog.warn("Syncronizing changes to database")
-            sequelize.sync(); //auto syncs models to db // if not,  use cli instead?
+            ColoredLog.warn("No Prod: Syncronizing changes to database")
+            await sequelize.sync(); //auto syncs models to db // if not,  use cli instead?
+            // await sequelize.sync({alter: true, force: true}); //auto syncs models to db // if not,  use cli instead?
         }
         ColoredLog.success("Database connection established");
     } catch (error) {
