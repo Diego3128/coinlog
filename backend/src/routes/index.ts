@@ -1,5 +1,6 @@
 import { Router } from "express";
 import { BudgetRoutes } from "./budget.routes";
+import { ExpenseRoutes } from "./expense.routes";
 
 export class AppRoutes {
 
@@ -10,6 +11,7 @@ export class AppRoutes {
         const routes =  Router();
 
         routes.use("/budgets", BudgetRoutes.routes); 
+        routes.use("/expenses", ExpenseRoutes.routes); 
 
         //routes.use(); //todo: add auth routes
 

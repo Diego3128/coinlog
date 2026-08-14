@@ -7,7 +7,7 @@ export interface ExpenseAttributes {
   id: number;
   name: string;
   amount: number;
-  budget: Budget;
+  budgetId: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
