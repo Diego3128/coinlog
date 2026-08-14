@@ -22,7 +22,7 @@ export class ExpenseController {
       if (error) throw error;
 
       const result = await this.expenseService.getAll(budgetId, filterDto);
-      return res.json({ result });
+      return res.json( result );
     } catch (error) {
       this.handleError(error, res);
     }

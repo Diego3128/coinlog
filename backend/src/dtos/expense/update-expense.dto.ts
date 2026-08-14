@@ -18,6 +18,14 @@ export class UpdateExpenseDto {
       if (typeof name !== "string" || name.trim().length === 0) {
         return [CustomError.badRequest("Name must be a non-empty string")];
       }
+
+          if(typeof name === "string" && name.length > 255){
+      return [CustomError.badRequest("Name must be less than 255 characters")];
+    }
+    
+    if(typeof name === "string" && name.length > 255){
+      return [CustomError.badRequest("Name must be less than 255 characters")];
+    }
       validatedName = name.trim();
     }
 

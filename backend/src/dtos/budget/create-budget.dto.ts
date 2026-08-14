@@ -13,6 +13,10 @@ export class CreateBudgetDto {
             return [CustomError.badRequest('Name is required and must be a non-empty string')];
         }
 
+        if(typeof name === "string" && name.length > 255){
+            return [CustomError.badRequest("Name must be less than 255 characters")];
+        }
+
         if (amount === undefined || amount === null) {
             return [CustomError.badRequest('Amount is required')];
         }
