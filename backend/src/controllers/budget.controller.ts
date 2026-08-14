@@ -18,7 +18,7 @@ export class BudgetController {
             const [error, filterBudgetDto] = FilterBudgetDto.create(req.query);
             if(error) throw error;
             const data = await this.budgetService.getAllBudgets(filterBudgetDto)
-            return res.status(200).json({ data });
+            return res.status(200).json(data);
         } catch (error) {
             this.handleError(error, res);
         }
@@ -42,7 +42,7 @@ export class BudgetController {
         try {
             const budgetId = req.budgetId;
             const data = await this.budgetService.getBudgetById(budgetId);
-            return res.json({ data });
+            return res.json(data);
         } catch (error) {
             this.handleError(error, res);
         }
@@ -56,7 +56,7 @@ export class BudgetController {
             if (budgetError) throw budgetError;
 
             const result = await this.budgetService.updateBudgetById(budgetId, updateBudgetDto);
-            return res.json({ result });
+            return res.json( result );
         } catch (error) {
             this.handleError(error, res);
         }
@@ -67,7 +67,7 @@ export class BudgetController {
         try {
             const budgetId = req.budgetId;
             const result = await this.budgetService.deleteBudgetById(budgetId);
-            return res.json({ result });
+            return res.json( result );
         } catch (error) {
             this.handleError(error, res);
         }
