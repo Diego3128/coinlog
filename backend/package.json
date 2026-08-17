@@ -23,6 +23,7 @@
     "typescript": "^7.0.2"
   },
   "dependencies": {
+    "@types/jsonwebtoken": "^9.0.10",
     "bcryptjs": "^3.0.3",
     "colors": "^1.4.0",
     "cors": "^2.8.6",
@@ -30,6 +31,7 @@
     "env-var": "^7.5.0",
     "express": "^5.2.1",
     "express-rate-limit": "^8.6.2",
+    "jsonwebtoken": "^9.0.3",
     "mailtrap": "^4.8.0",
     "morgan": "^1.11.0",
     "nodemailer": "^9.0.5",

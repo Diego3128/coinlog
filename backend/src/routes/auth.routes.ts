@@ -32,6 +32,12 @@ export class AuthRoutes{
 
         router.post("/create-account" , authController.createAccount);
 
+        router.post("/login" , authController.loginAccount);
+
+        //todo: renovation endpoint. Invocated when the accessToken expires
+        router.post("/refresh-token" , authController.renewAccessToken);
+
+
         router.post("/confirm-account", codeVerificationLimiter , checkVerifyCode , authController.confirmAccount);
 
         return router;

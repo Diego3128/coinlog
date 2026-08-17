@@ -8,6 +8,7 @@ import {
   Model,
   Table,
 } from "sequelize-typescript";
+import RefreshToken from "./RefreshToken";
 
 // interface with all table columns
 export interface UserAttributes {
@@ -19,7 +20,7 @@ export interface UserAttributes {
   password: string;
   validationToken?: string | null;
   confirmed: boolean;
-  jwt_token?: string | null; //TODO:  future ft for refresh tokens and access tokens
+  refreshTokens?: RefreshToken[]
   profilePictureUrl?: string | null;
   budgets?: Budget[];
   createdAt?: Date;
@@ -89,13 +90,6 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
   declare confirmed: boolean;
 
   @Column({
-    field: "jwt_token",
-    allowNull: true,
-    type: DataType.STRING(255),
-  })
-  declare jwt_token: string | null;
-
-  @Column({
     field: "profilePictureUrl",
     allowNull: true,
     type: DataType.TEXT,
@@ -107,6 +101,12 @@ export class User extends Model<UserAttributes, UserCreationAttributes> {
     onUpdate: "CASCADE",
   })
   budgets?: Budget[];
+
+  @HasMany(() => RefreshToken, {
+    onDelete: "CASCADE",
+    onUpdate: "CASCADE",
+  })
+  declare refreshTokens?: RefreshToken[];
 }
 
 export default User;

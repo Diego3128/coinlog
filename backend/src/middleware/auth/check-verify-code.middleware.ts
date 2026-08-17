@@ -1,5 +1,5 @@
 import {type Request, type Response, type NextFunction} from "express";
-import { VerifyCodeRequest } from "../../types/VerifyCodeRequest";
+import { VerifyCodeRequest } from "../../types/auth/VerifyCodeRequest";
 
 export const checkVerifyCode = (req: Request, res: Response, next: NextFunction)=> {
     const code = req.body.code ?? '';
