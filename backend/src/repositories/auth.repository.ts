@@ -30,4 +30,13 @@ export class AuthRepository implements IAuthRepository {
       validationToken: data.token,
     });
   };
+
+  validateUserAccount = async (code: string): Promise<boolean | null> => {
+    const user = await User.findOne({where: {validationToken: code}});
+    if(!user) return null;
+    user.confirmed = true;
+    user.validationToken = null;
+    user.save();
+    return true;
+  }
 }

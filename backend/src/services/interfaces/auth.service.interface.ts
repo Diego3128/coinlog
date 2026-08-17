@@ -3,4 +3,6 @@ import { CreatedAccountResponseDto } from '../../dtos/auth/created-account-respo
 
 export interface IAuthService {
     createNewAccount: (data: CreateUserDto) => Promise<CreatedAccountResponseDto>;
+
+    validateUser :(code: string)=> Promise<boolean>;
 }

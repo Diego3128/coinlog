@@ -10,4 +10,6 @@ export interface IAuthRepository {
   createNewAccount: (data: CreateUserDtoWithToken) => Promise<User>;
 
   findByEmailOrUsername({email,username}: {email: string; username: string}): Promise<User | null>;
+
+  validateUserAccount: (code: string) => Promise<boolean | null>
 }

@@ -68,6 +68,16 @@ export class AuthService implements IAuthService {
     }
   };
 
+  validateUser = async (code: string): Promise<boolean> => {
+    const result = await this.authRepository.validateUserAccount(code);
+    if (!result)
+      throw CustomError.badRequest(
+        "The account was not confirmed. Make sure the code is valid.",
+      );
+
+    return result;
+  };
+
   private sendVerificationToken = async ({
     recipient,
     token,
