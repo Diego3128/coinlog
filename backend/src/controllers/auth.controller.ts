@@ -3,15 +3,12 @@ import { CreateUserDto } from "../dtos/auth/create-user.dto";
 import { CustomError } from "../errors/CustomError";
 import { IAuthService } from "../services/interfaces/auth.service.interface";
 import { CreatedAccountResponseDto } from "../dtos/auth/created-account-response.dto";
-import { ApiResponse } from "../types/ApiResponse";
+import { ApiResponse, TypedResponse } from "../types/ApiResponse";
 import { VerifyCodeRequest } from "../types/auth/VerifyCodeRequest";
 import { LoginRequest } from "../types/auth/LoginRequest";
 import { LoginUserDto } from "../dtos/auth/login-user.dto";
 import { LoginResponseDto } from "../dtos/auth/login-response.dto";
 
-// Response<ResBody, Locals, StatusCode, ReqBody>.  ResBody is the object allowed to be passed to res.json().
-// ResBody is overwritten to TypedResponse<T>. all handlers must return a TypedResponse<T>
-type TypedResponse<T> = Response<ApiResponse<T>>;
 
 export class AuthController {
   constructor(private readonly authService: IAuthService) {}

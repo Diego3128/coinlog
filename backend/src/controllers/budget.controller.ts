@@ -1,9 +1,10 @@
 // Express handlers for Budget endpoints
-import { type Request, type Response } from 'express';
+import { type Response } from 'express';
 import { IBudgetService } from '../services/interfaces/budget.service.interface';
 import { CustomError } from '../errors/CustomError';
 import { CreateBudgetDto, UpdateBudgetDto, FilterBudgetDto } from '../dtos';
 import { BudgetIdRequest } from '../types/BudgetIdRequest';
+import { AuthenticatedRequest } from '../types/auth/AuthenticatedRequest';
 
 export class BudgetController {
 
@@ -13,7 +14,7 @@ export class BudgetController {
     ) {
         this.budgetService = budgetService;
     }
-    getAll = async (req: Request, res: Response) => {
+    getAll = async (req: AuthenticatedRequest, res: Response) => {
         try {
             const [error, filterBudgetDto] = FilterBudgetDto.create(req.query);
             if(error) throw error;
@@ -25,7 +26,7 @@ export class BudgetController {
 
     }
 
-    createBudget = async (req: Request, res: Response) => {
+    createBudget = async (req: AuthenticatedRequest, res: Response) => {
         try {
             const [error, createBudgetDto] = CreateBudgetDto.create(req.body);
             if (error) throw error;
@@ -40,6 +41,8 @@ export class BudgetController {
 
     getBudgetById = async (req: BudgetIdRequest, res: Response) => {
         try {
+            const userId = req.userId;
+            // console.log({userId});
             const budgetId = req.budgetId;
             const data = await this.budgetService.getBudgetById(budgetId);
             return res.json(data);
