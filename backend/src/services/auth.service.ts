@@ -12,6 +12,10 @@ import { verificationEmailTemplate } from "../config/templates/email/verificatio
 import { loggedInEmailTemplate } from "../config/templates/email/logged-in-email.template";
 import { LoginResponseDto } from "../dtos/auth/login-response.dto";
 import { JwtAdapter } from "../config/adapters/jwt.adapter";
+import { ForgotPasswordResponse } from "../dtos/auth/forgot-password-response.dto";
+import { passwordResetEmailTemplate } from "../config/templates/email/password-token-recovery-email.template";
+import { CheckRecoveryTokenResponse } from "../dtos/auth/check-recovery-token-response.dto";
+import { ResetPasswordDto } from "../dtos/auth/reset-password.dto";
 
 export class AuthService implements IAuthService {
   constructor(
@@ -124,7 +128,7 @@ export class AuthService implements IAuthService {
 
   /**
    * Generates a new access token and refreh token taking a refresh token
-  */
+   */
   renewAccessToken = async (
     rawRefreshToken: string,
   ): Promise<LoginResponseDto> => {
@@ -176,7 +180,8 @@ export class AuthService implements IAuthService {
     await this.authRepository.deleteRefreshToken(matchedSession.id);
 
     // generate new pair of tokens
-    const {accessToken: newAccessToken, refreshToken: newRefreshToken} = await this.generateTokens(userId);
+    const { accessToken: newAccessToken, refreshToken: newRefreshToken } =
+      await this.generateTokens(userId);
 
     if (!newAccessToken || !newRefreshToken) {
       throw CustomError.internalServer(
@@ -210,7 +215,7 @@ export class AuthService implements IAuthService {
   private generateTokens = async (userId: number) => {
     const accessToken = await JwtAdapter.generateAccessToken(
       { id: userId },
-      "30s",
+      "30m",
     );
     const refreshToken = await JwtAdapter.generateRefreshToken(
       { id: userId },
@@ -227,6 +232,103 @@ export class AuthService implements IAuthService {
       );
 
     return result;
+  };
+
+  forgotPassword = async (email: string): Promise<ForgotPasswordResponse> => {
+    try {
+      //user exists
+      const userExists = await this.authRepository.findByEmail({ email });
+      if (!userExists) throw CustomError.forbidden("user does not exist");
+
+      //create token
+      const token = TokenGenerator.generateNumericToken();
+
+      userExists.validationToken = token;
+      await userExists.save();
+
+      // send code
+      const sent = await this.sendRecoveryToken({
+        recipient: userExists.email,
+        username: userExists.username,
+        token: token,
+      });
+      if (!sent) {
+        userExists.validationToken = null;
+        userExists.save();
+        throw CustomError.internalServer("Error sending recovery token email");
+      }
+      //create reponse
+      return new ForgotPasswordResponse(
+        "Recovery token sent to: " + userExists.email,
+      );
+    } catch (error) {
+      if (error instanceof CustomError) throw error;
+      throw CustomError.internalServer("Error creating recovery token");
+    }
+  };
+
+  updateUserPassword = async (
+    resetPasswordDto: ResetPasswordDto,
+  ): Promise<CheckRecoveryTokenResponse> => {
+    try {
+      const passwordHash = await HashAdapter.hashPassword(
+        resetPasswordDto.newPassword,
+      );
+      const result = await this.authRepository.updateUserPassword({
+        email: resetPasswordDto.email,
+        passwordHash,
+        validationToken: resetPasswordDto.recoveryToken,
+      });
+      if(!result) throw CustomError.internalServer("Password could not be updated. Make sure the email and recoveryToken are valid");
+      return new CheckRecoveryTokenResponse("Password updated", true);
+    } catch (error) {
+      if (error instanceof CustomError) throw error;
+      throw CustomError.internalServer("Error updating password");
+    }
+  };
+
+  checkRecoveryToken = async (
+    token: string,
+  ): Promise<CheckRecoveryTokenResponse> => {
+    try {
+      //check if token exists
+      const tokenExists =
+        await this.authRepository.validationTokenExists(token);
+      if (tokenExists) {
+        return new CheckRecoveryTokenResponse("Token exists", true);
+      } else {
+        throw CustomError.notFound("Token does not exist");
+      }
+      // const token = this.authRepository.valid
+    } catch (error) {
+      if (error instanceof CustomError) throw error;
+      throw CustomError.internalServer("Error validating token");
+    }
+  };
+
+  private sendRecoveryToken = async ({
+    recipient,
+    token,
+    username,
+  }: {
+    recipient: string;
+    username: string;
+    token: string;
+  }): Promise<boolean> => {
+    try {
+      const { html } = passwordResetEmailTemplate({ token, username });
+
+      return await this.emailService.sendEmail({
+        html,
+        subject: "Coinlog - Password recovery token",
+        recipients: [recipient],
+        // senderPrefix: 'support'
+      });
+    } catch (error) {
+      ColoredLog.error("Failed to send  email with recovery token:");
+      console.log(error);
+      return false;
+    }
   };
 
   private sendVerificationToken = async ({

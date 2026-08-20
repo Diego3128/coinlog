@@ -79,4 +79,22 @@ export class AuthRepository implements IAuthRepository {
     user.save();
     return true;
   };
+
+  validationTokenExists =  async(validationToken: string): Promise<boolean> => {
+    const user = await  User.findOne({where: {validationToken}});
+    return !!user;
+  };
+
+  updateUserPassword = async ({ email, validationToken, passwordHash, }: { email: string; validationToken: string; passwordHash: string; }): Promise<boolean> => {
+    // const user = await User.findOne({where: {email, validationToken}});
+    // if(!user) return false;
+    // user.password = passwordHash;
+    // user.validationToken = null;
+    // await user.save();
+    // return true;
+    const [count] = await User.update({password: passwordHash, validationToken: null}, {where: {email, validationToken}});
+    // console.log({count});
+    return count > 0;
+  };
+
 }

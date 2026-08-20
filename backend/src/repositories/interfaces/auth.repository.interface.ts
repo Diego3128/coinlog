@@ -7,14 +7,19 @@ export interface CreateUserDtoWithToken extends CreateUserDto {
 }
 
 export interface IAuthRepository {
- 
   createNewAccount: (data: CreateUserDtoWithToken) => Promise<User>;
 
-  findByEmailOrUsername({email,username}: {email: string; username: string}): Promise<User | null>;
+  findByEmailOrUsername({
+    email,
+    username,
+  }: {
+    email: string;
+    username: string;
+  }): Promise<User | null>;
 
-  findByEmail({email}: {email: string;}): Promise<User | null>;
+  findByEmail({ email }: { email: string }): Promise<User | null>;
 
-  validateUserAccount: (code: string) => Promise<boolean | null>
+  validateUserAccount: (code: string) => Promise<boolean | null>;
 
   /**
    * Saves a new hashed refresh token
@@ -41,4 +46,22 @@ export interface IAuthRepository {
    * Deletes all user tokens
    */
   deleteAllRefreshTokensByUserId: (userId: number) => Promise<boolean>;
+
+  /**
+   *  Check if there is a user with a validationToken
+   */
+  validationTokenExists: (validationToken: string) => Promise<boolean>;
+
+  /**
+   *  Updates a user password by their email & validationToken
+   */
+  updateUserPassword: ({
+    email,
+    validationToken,
+    passwordHash,
+  }: {
+    email: string;
+    validationToken: string;
+    passwordHash: string;
+  }) => Promise<boolean>;
 }
