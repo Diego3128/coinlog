@@ -1,0 +1,1 @@
+## Mappers format and transform data between database entities and Output DTOs to ensure clean data transfer. They prevent sensitive information from being exposed in (API) responses.

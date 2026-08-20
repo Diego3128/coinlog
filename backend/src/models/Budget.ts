@@ -1,13 +1,16 @@
-import { Table, Model, Column, DataType, HasMany } from "sequelize-typescript";
+import { Table, Model, Column, DataType, HasMany, BelongsTo, ForeignKey } from "sequelize-typescript";
 import { Optional } from "sequelize";
 import Expense from "./Expense";
+import User from "./User";
 
 // Interface with all table columns
 export interface BudgetAttributes {
   id: number;
   name: string;
   amount: number;
-  expenses: Expense[];
+  expenses?: Expense[];
+  user?: User;
+  userId: number;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -38,7 +41,19 @@ export class Budget extends Model<BudgetAttributes, BudgetCreationAttributes> {
     onDelete: "CASCADE",
     onUpdate: "CASCADE"
   })
-  expenses: Expense[]
+  expenses?: Expense[]
+
+  @ForeignKey(() => User)
+  @Column({
+    field: "userId",
+    allowNull: false,
+    type: DataType.INTEGER,
+  })
+  declare userId: number;
+
+  @BelongsTo(() => User)
+  declare user?: User;
+
 }
 
 export default Budget;
