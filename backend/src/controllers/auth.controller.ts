@@ -8,7 +8,11 @@ import { VerifyCodeRequest } from "../types/auth/VerifyCodeRequest";
 import { LoginRequest } from "../types/auth/LoginRequest";
 import { LoginUserDto } from "../dtos/auth/login-user.dto";
 import { LoginResponseDto } from "../dtos/auth/login-response.dto";
-
+import { ForgotPasswordDto } from "../dtos/auth/forgot-password.dto";
+import { ForgotPasswordResponse } from "../dtos/auth/forgot-password-response.dto";
+import { CheckRecoveryTokenRequest } from "../types/auth/CheckRecoveryTokenRequest";
+import { CheckRecoveryTokenResponse } from "../dtos/auth/check-recovery-token-response.dto";
+import { ResetPasswordDto } from "../dtos/auth/reset-password.dto";
 
 export class AuthController {
   constructor(private readonly authService: IAuthService) {}
@@ -84,6 +88,47 @@ export class AuthController {
       return res.status(response.code).json(response);
     } catch (error) {
       this.handleError(error, res);
+    }
+  };
+
+  forgotPassword = async (
+    req: Request,
+    res: TypedResponse<ForgotPasswordResponse>,
+  ) => {
+    try {
+      const [error, forgotPasswordDto] = ForgotPasswordDto.create(req.body);
+      if (error) throw error;
+      const response = await this.authService.forgotPassword(
+        forgotPasswordDto.email,
+      );
+
+      return res.json({ ok: true, code: 200, data: response });
+    } catch (error) {
+      this.handleError(error, res);
+    }
+  };
+
+  checkRecoveryToken = async (
+    req: CheckRecoveryTokenRequest,
+    res: TypedResponse<CheckRecoveryTokenResponse>,
+  ) => {
+    const recoveryToken = req.recoveryToken;
+    try {
+      const response: CheckRecoveryTokenResponse = await this.authService.checkRecoveryToken(recoveryToken);
+      return res.json({ code: 200, ok: true, data: response });
+    } catch (error) {
+      this.handleError(error, res);
+    }
+  };
+
+  resetPassword = async (req: Request, res: TypedResponse<CheckRecoveryTokenResponse>) => {
+    try {
+      const [error, resetPasswordDto] = ResetPasswordDto.create(req.body);
+      if(error) throw error;
+      const result: CheckRecoveryTokenResponse =  await this.authService.updateUserPassword(resetPasswordDto);
+      res.json({code: 200, ok: true, data: result});
+    } catch (error) {
+      this.handleError(error, res)      ;
     }
   };
 

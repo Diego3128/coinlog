@@ -9,6 +9,7 @@ import { MailtrapService } from "../services/mailtrap-email.service";
 import { environments } from "../config/envs/envs";
 import { checkVerifyCode } from "../middleware/auth/check-verify-code.middleware";
 import { authLimiter, codeVerificationLimiter } from "../middleware/rate-limiter.middleware";
+import { checkRecoveryToken } from "../middleware/auth/check-recovery-token";
 
 
 const {MAILTRAP_API_TOKEN, PROD, TEST_INBOX_ID, EMAIL_DOMAIN} =  environments;
@@ -34,12 +35,21 @@ export class AuthRoutes{
 
         router.post("/login" , authController.loginAccount);
 
-        //todo: renovation endpoint. Invocated when the accessToken expires
+        //renovation endpoint. Invocated when the accessToken expires
         router.post("/refresh-token" , authController.renewAccessToken);
-
 
         router.post("/confirm-account", codeVerificationLimiter , checkVerifyCode , authController.confirmAccount);
 
+        // sends a recovery token to the user's email
+        router.post("/forgot-password", authController.forgotPassword);
+
+        //checks if a recovery token is valid
+        router.post("/check-recovery-token", checkRecoveryToken, authController.checkRecoveryToken);
+
+        //resets a password taking the recovery token, the email & new password
+        router.post("/reset-password" , authController.resetPassword); //TODO: Create dto for response
+
+        
         return router;
 
     }
