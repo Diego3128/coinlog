@@ -1,10 +1,10 @@
-import { CreateBudgetDto } from "../dtos/budget/create-budget.dto";
-import Budget from "../models/Budget";
 import { IBudgetRepository } from "../repositories/interfaces/budget.repository.interface";
 import { IBudgetService } from "./interfaces/budget.service.interface";
-import { FilterBudgetDto } from "../dtos/budget/filter-budget.dto";
 import { CustomError } from "../errors/CustomError";
-import { UpdateBudgetDto } from "../dtos/budget/update-budget.dto";
+import { BudgetMapper } from "../mappers/budget/budget.mapper";
+import { GetBudgetByIdDto, CreateBudgetDto, BudgetResponseDto, UpdateBudgetDto, FilterBudgetDto } from "../dtos";
+import { Pagination } from "../types/Pagination";
+
 
 export class BudgetService implements IBudgetService {
   private readonly budgetRepository: IBudgetRepository;
@@ -13,62 +13,75 @@ export class BudgetService implements IBudgetService {
     this.budgetRepository = budgetRepository;
   }
 
-  createBudget = async (data: CreateBudgetDto): Promise<Budget> => {
-    return await this.budgetRepository.createBudget(data);
+  createBudget = async (dto: CreateBudgetDto): Promise<BudgetResponseDto> => {
+    try {
+      const budget = await this.budgetRepository.createBudget(dto);
+      return BudgetMapper.budgetEntityToBudgetResponseDto(budget);
+    } catch (error) {
+      throw CustomError.internalServer("Error creating budget");
+    }
   };
 
   getAllBudgets = async (
     filterDto: FilterBudgetDto,
   ): Promise<{
-    data: Budget[];
-    pagination: {
-      count: number;
-      totalCount: number;
-      page: number;
-      totalPages: number;
-      limit: number;
-    };
+    data: BudgetResponseDto[];
+    pagination: Pagination;
   }> => {
-    //business logic
-    return await this.budgetRepository.getAllBudgets(filterDto);
+    try {
+      const result = await this.budgetRepository.getAllBudgets(filterDto);
+      const budgets = result.data.map(
+        BudgetMapper.budgetEntityToBudgetResponseDto,
+      );
+      return {
+        data: budgets,
+        pagination: result.pagination,
+      };
+    } catch (error) {
+      throw CustomError.internalServer("Error fetching user budgets");
+    }
   };
 
-  getBudgetById = async (id: number): Promise<Budget> => {
-    const budget = await this.budgetRepository.getBudgetById(id);
-    if (!budget)
-      throw new CustomError(404, `The budget with id '${id}' was not found.`); //business rule, Services throw CustomError
-    return budget;
+  getBudgetById = async (dto: GetBudgetByIdDto): Promise<BudgetResponseDto> => {
+    try {
+      const budget = await this.budgetRepository.getBudgetById(dto);
+      // console.log({budget});
+      if (!budget)
+        throw new CustomError(
+          404,
+          `The budget with id '${dto.id}' was not found.`,
+        ); //business rule, Services throw CustomError
+      return BudgetMapper.budgetEntityToBudgetResponseDto(budget);
+    } catch (error) {
+      //console.log(error);
+      if(error instanceof CustomError) throw error;
+      throw CustomError.internalServer("Error fetching budget with id " + dto.id)
+    }
   };
 
   updateBudgetById = async (
     id: number,
     updateBudgetDto: UpdateBudgetDto,
-  ): Promise<Budget> => {
+  ): Promise<BudgetResponseDto> => {
     try {
-      //business rule. check if budget exists
-      const budget = await this.budgetRepository.updateBudgetById(
-        id,
-        updateBudgetDto,
-      );
-      if (!budget)
-        throw CustomError.notFound(`Budget with id '${id}' not found`);
-      return budget;
+      const budget = await this.budgetRepository.updateBudgetById(updateBudgetDto);
+      if (!budget) throw CustomError.notFound(`Budget with id '${id}' not found`);
+      return BudgetMapper.budgetEntityToBudgetResponseDto(budget);
     } catch (error) {
-      // console.log({ error });
-      throw error;
+      if(error instanceof CustomError) throw error;
+      throw CustomError.internalServer("Error updating budget with id " + updateBudgetDto.id);
     }
   };
 
-  deleteBudgetById = async (id: number): Promise<Budget> => {
+  deleteBudgetById = async (dto: GetBudgetByIdDto): Promise<BudgetResponseDto> => {
     try {
-      //business rule. check if budget exists
-      const budget = await this.budgetRepository.deleteBudgetById(id);
+      const budget = await this.budgetRepository.deleteBudgetById(dto);
       if (!budget)
-        throw CustomError.notFound(`Budget with id '${id}' not found`);
-      return budget;
+        throw CustomError.notFound(`Budget with id '${dto.id}' not found`);
+      return BudgetMapper.budgetEntityToBudgetResponseDto(budget);
     } catch (error) {
-      // console.log({ error });
-      throw error;
+      if(error instanceof CustomError) throw error;
+      throw CustomError.internalServer("Error deleting budget with id " + dto.id);
     }
   };
 }

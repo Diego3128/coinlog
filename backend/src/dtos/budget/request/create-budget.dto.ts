@@ -1,12 +1,13 @@
-import { CustomError } from '../../errors/CustomError';
+import { CustomError } from '../../../errors/CustomError';
 
 export class CreateBudgetDto {
     private constructor(
         public readonly name: string,
-        public readonly amount: number
+        public readonly amount: number,
+        public readonly userId: number
     ) { }
 
-    static create(object: { [key: string]: any } = {}): [CustomError?, CreateBudgetDto?] {
+    static create(object: { [key: string]: any } = {}, userId: number): [CustomError?, CreateBudgetDto?] {
         const { name, amount } = object;
 
         if (!name || typeof name !== 'string' || name.trim().length === 0) {
@@ -26,6 +27,10 @@ export class CreateBudgetDto {
             return [CustomError.badRequest('Amount must be a valid positive number')];
         }
 
-        return [undefined, new CreateBudgetDto(name.trim(), parsedAmount)];
+        if(!userId || isNaN(userId)){
+            return [CustomError.badRequest('userId is missing or required')];
+        }
+
+        return [undefined, new CreateBudgetDto(name.trim(), parsedAmount, userId)];
     }
 };

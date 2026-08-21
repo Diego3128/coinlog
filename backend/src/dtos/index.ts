@@ -1,8 +1,9 @@
 // Budget DTOS
-export * from "./budget/create-budget.dto"
-export * from "./budget/filter-budget.dto"
-export * from "./budget/get-budget-by-id.dto"
-export * from "./budget/update-budget.dto"
+export * from "./budget/request/create-budget.dto"
+export * from "./budget/request/filter-budget.dto"
+export * from "./budget/request/get-budget-by-id.dto"
+export * from "./budget/request/update-budget.dto"
+export * from "./budget/response/budget-response.dto"
 
 
 // Expense DTOS

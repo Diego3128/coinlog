@@ -18,6 +18,8 @@ export const environments = {
     EMAIL_DOMAIN: get("EMAIL_DOMAIN").required().asString(),
     JWT_SECRET: get("JWT_SECRET").required().asString(),
     REFRESH_SECRET: get("REFRESH_SECRET").required().asString(),
+    ACCESS_TOKEN_LIFE: get("ACCESS_TOKEN_LIFE").required().asIntPositive(),
+    REFRESH_TOKEN_LIFE: get("REFRESH_TOKEN_LIFE").required().asIntPositive(),
     // DB_NAME: get("DB_NAME").required().asString(),
     // CLOUDINARY_CLOUD_NAME: get("CLOUDINARY_CLOUD_NAME").required().asString(),
     // CLOUDINARY_API_KEY: get("CLOUDINARY_API_KEY").required().asString(),

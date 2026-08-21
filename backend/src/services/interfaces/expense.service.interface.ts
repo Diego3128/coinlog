@@ -1,5 +1,5 @@
 import { CreateExpenseDto, UpdateExpenseDto } from "../../dtos";
-import { FilterBudgetDto } from "../../dtos/budget/filter-budget.dto";
+import { FilterBudgetDto } from "../../dtos/budget/request/filter-budget.dto";
 import Expense from "../../models/Expense";
 
 export interface IExpenseService {
