@@ -28,7 +28,7 @@ export class CreateBudgetDto {
         }
 
         if(!userId || isNaN(userId)){
-            return [CustomError.badRequest('userId is missing or required')];
+            return [CustomError.badRequest('userId is missing or invalid')];
         }
 
         return [undefined, new CreateBudgetDto(name.trim(), parsedAmount, userId)];

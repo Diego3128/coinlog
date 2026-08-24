@@ -3,17 +3,12 @@ import { CreateBudgetDto } from "../../dtos/budget/request/create-budget.dto";
 import { FilterBudgetDto } from "../../dtos/budget/request/filter-budget.dto";
 import { UpdateBudgetDto } from "../../dtos/budget/request/update-budget.dto";
 import { BudgetResponseDto } from "../../dtos/budget/response/budget-response.dto";
+import { Pagination } from "../../types/Pagination";
 
 export interface IBudgetService {
   getAllBudgets: (filterDto: FilterBudgetDto) => Promise<{
     data: BudgetResponseDto[];
-    pagination: {
-      count: number;
-      totalCount: number;
-      page: number;
-      totalPages: number;
-      limit: number;
-    };
+    pagination: Pagination;
   }>;
 
   createBudget: (data: CreateBudgetDto) => Promise<BudgetResponseDto>;

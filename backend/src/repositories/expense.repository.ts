@@ -1,38 +1,35 @@
 import { Op, WhereOptions } from "sequelize";
 import Expense, { ExpenseAttributes } from "../models/Expense";
 import Budget from "../models/Budget";
-import { CreateExpenseDto } from "../dtos/expense/create-expense.dto";
-import { UpdateExpenseDto } from "../dtos/expense/update-expense.dto";
-import { FilterExpenseDto } from "../dtos/expense/filter-expense.dto";
 import { IExpenseRepository } from "./interfaces/expense.repository.interface";
+import { UpdateExpenseDto, CreateExpenseDto, FilterExpenseDto } from "../dtos";
+import { GetExpenseByIdDto } from "../dtos/expense/request/get-expense-by-id.dto";
 
 export class ExpenseRepository implements IExpenseRepository {
   createExpense = async (
-    budgetId: number,
-    createExpenseDto: CreateExpenseDto,
+    dto: CreateExpenseDto,
   ): Promise<Expense> => {
     return await Expense.create({
-      name: createExpenseDto.name,
-      amount: createExpenseDto.amount,
-      budgetId: budgetId,
+      name: dto.name,
+      amount: dto.amount,
+      budgetId: dto.budgetId,
     });
   };
 
-  getAllExpenses = async (budgetId: number, filterDto: FilterExpenseDto) => {
+  getAllExpenses = async (dto: FilterExpenseDto) => {
     const where: WhereOptions<ExpenseAttributes> = {};
 
-    where.budgetId = budgetId; //mandatory
-    //TODO: and where for the authenticated user
+    where.budgetId = dto.budgetId; //mandatory
 
-    if (filterDto.name) {
-      where.name = { [Op.iLike]: `%${filterDto.name}%` };
+    if (dto.name) {
+      where.name = { [Op.iLike]: `%${dto.name}%` };
     }
 
     const { rows, count: totalCount } = await Expense.findAndCountAll({
       where,
-      limit: filterDto.limit,
-      offset: filterDto.offset,
-      order: [[filterDto.sortBy, filterDto.order]],
+      limit: dto.limit,
+      offset: dto.offset,
+      order: [[dto.sortBy, dto.order]],
       // include: [{ model: Budget, attributes: ["id", "name"] }],
     });
 
@@ -40,10 +37,10 @@ export class ExpenseRepository implements IExpenseRepository {
       data: rows ?? [],
       pagination: {
         count: rows.length,
-        totalPages: Math.ceil(totalCount / filterDto.limit) || 0,
+        totalPages: Math.ceil(totalCount / dto.limit) || 0,
         totalCount,
-        page: filterDto.page,
-        limit: filterDto.limit,
+        page: dto.page,
+        limit: dto.limit,
       },
     };
   };
@@ -55,21 +52,17 @@ export class ExpenseRepository implements IExpenseRepository {
   };
 
   updateExpenseById = async (
-    id: number,
-    updateExpenseDto: UpdateExpenseDto,
+    dto: UpdateExpenseDto,
   ): Promise<Expense | null> => {
-    const expense = await Expense.findByPk(id, {
-      include: [{ model: Budget, attributes: ["id", "name", "amount"] }],
+    const expense = await Expense.findByPk(dto.expenseId, {
+      // include: [{ model: Budget, attributes: ["id", "name", "amount"] }],
     });
-
-    if (!expense) return null;
-
-    await expense.update(updateExpenseDto.values);
+    await expense.update(dto.values);
     return expense;
   };
 
-  deleteExpenseById = async (id: number): Promise<boolean> => {
-    const count = await Expense.destroy({ where: { id } });
+  deleteExpenseById = async (dto: GetExpenseByIdDto): Promise<boolean> => {
+    const count = await Expense.destroy({ where: { id: dto.expenseId } });
     return count > 0;
   };
 }

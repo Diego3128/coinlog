@@ -1,8 +1,15 @@
-import { ColoredLog } from "../config/adapters/colors.adapter";
-import { FilterExpenseDto, CreateExpenseDto, UpdateExpenseDto } from "../dtos";
+import {
+  FilterExpenseDto,
+  CreateExpenseDto,
+  UpdateExpenseDto,
+} from "../dtos";
+import { GetExpenseByIdDto } from "../dtos/expense/request/get-expense-by-id.dto";
+import { ExpenseResponseDto } from "../dtos/expense/response/expense-response.dto";
 import { CustomError } from "../errors/CustomError";
+import { ExpenseMapper } from "../mappers/expense/expense.mapper";
 import Expense from "../models/Expense";
 import { IExpenseRepository } from "../repositories/interfaces/expense.repository.interface";
+import { Pagination } from "../types/Pagination";
 import { IBudgetService } from "./interfaces/budget.service.interface";
 import { IExpenseService } from "./interfaces/expense.service.interface";
 
@@ -13,41 +20,45 @@ export class ExpenseService implements IExpenseService {
   ) {}
 
   getAll = async (
-    budgetId: number,
     filterDto: FilterExpenseDto,
   ): Promise<{
-    data: Expense[];
-    pagination: {
-      count: number;
-      totalCount: number;
-      page: number;
-      totalPages: number;
-      limit: number;
-    };
+    data: ExpenseResponseDto[];
+    pagination: Pagination;
   }> => {
-    ColoredLog.error(
-      "TODO: Include additional validation for the authenticated user",
-    );
+    try {
+      //check if user owns this budget. //throws 404
+      await this.budgetService.getBudgetById({
+        id: filterDto.budgetId,
+        userId: filterDto.userId,
+      }); //throws 404
 
-    return await this.expenseRepository.getAllExpenses(budgetId, filterDto);
+      const result = await this.expenseRepository.getAllExpenses(filterDto);
+      const expenses = result.data.map(
+        ExpenseMapper.expenseEntityToExpenseResponseDto,
+      );
+      return { data: expenses, pagination: result.pagination };
+    } catch (error) {
+      if (error instanceof CustomError) throw error;
+      throw CustomError.internalServer("Error fetching expenses");
+    }
   };
 
   createExpense = async (
-    budgetId: number,
-    createExpenseDto: CreateExpenseDto,
-  ): Promise<Expense> => {
-    ColoredLog.error(
-      "TODO: Include additional validation for the authenticated user",
-    );
+    dto: CreateExpenseDto,
+  ): Promise<ExpenseResponseDto> => {
     try {
-      //validates if exists //throws CustomError 404
-      await this.budgetService.getBudgetById(budgetId);
-      const expense = await this.expenseRepository.createExpense(
-        budgetId,
-        createExpenseDto,
-      );
-      return expense;
+      //validates if budget exists & belongs to current user
+      const existingBudget = await this.budgetService.getBudgetById({
+        id: dto.budgetId,
+        userId: dto.userId,
+      }); //throws CustomError 404
+      if (!existingBudget) {
+        throw CustomError.conflict("Error assigning expense to budget");
+      }
+      const expense = await this.expenseRepository.createExpense(dto);
+      return ExpenseMapper.expenseEntityToExpenseResponseDto(expense);
     } catch (error) {
+      // console.log(error);
       if (error instanceof CustomError) {
         throw error;
       } else
@@ -58,37 +69,61 @@ export class ExpenseService implements IExpenseService {
     }
   };
 
-  getById = async (id: number): Promise<Expense> => {
-    ColoredLog.error(
-      "TODO: Include additional validation for the authenticated user",
-    );
-    const expense = await this.expenseRepository.getExpenseById(id);
-    if (!expense) throw CustomError.notFound(`Expense with id ${id} not found`);
-    return expense;
+  getById = async (dto: GetExpenseByIdDto): Promise<ExpenseResponseDto> => {
+    try {
+      //get expense
+      const expense = await this.expenseRepository.getExpenseById(dto.expenseId);
+      if (!expense)
+        throw CustomError.notFound(
+          `The expense with id '${dto.expenseId}' was not found`,
+        );
+      //get budget by id
+      //checks if the expense belongs to authenticated user //throws 404
+      await this.budgetService.getBudgetById({
+        id: expense.budgetId,
+        userId: dto.userId,
+      });
+
+      return ExpenseMapper.expenseEntityToExpenseResponseDto(expense);
+    } catch (error) {
+      if (error instanceof CustomError && error.statusCode === 404) {
+        //done to re-write error of 404 for budget
+        throw CustomError.notFound(
+          `The expense with id '${dto.expenseId}' was not found`,
+        );
+      }
+      throw CustomError.internalServer(
+        "Error fetching the expense with id " + dto.expenseId,
+      );
+    }
   };
 
-  updateById = async (
-    id: number,
-    updateExpenseDto: UpdateExpenseDto,
-  ): Promise<Expense> => {
-    ColoredLog.error(
-      "TODO: Include additional validation for the authenticated user",
-    );
-    const expense = await this.expenseRepository.updateExpenseById(
-      id,
-      updateExpenseDto,
-    );
-    if (!expense) throw CustomError.notFound(`Expense with id ${id} not found`);
-    return expense;
+  updateById = async (dto: UpdateExpenseDto): Promise<ExpenseResponseDto> => {
+    try {
+      //throws on error || if expense does not belong to authenticated user, not found, etc..
+      await this.getById({expenseId: dto.expenseId,userId: dto.userId});
+      //update
+      const result = await this.expenseRepository.updateExpenseById(dto);
+      return ExpenseMapper.expenseEntityToExpenseResponseDto(result);
+    } catch (error) {
+      if (error instanceof CustomError) throw error;
+      throw CustomError.internalServer(
+        "Error updating the expense with id " + dto.expenseId,
+      );
+    }
   };
 
-  deleteById = async (id: number): Promise<{ message: string }> => {
-    ColoredLog.error(
-      "TODO: Include additional validation for the authenticated user",
-    );
-
-    const destroyed = await this.expenseRepository.deleteExpenseById(id);
-    if (!destroyed) throw CustomError.notFound(`Expense with id ${id} not found`);
-    return { message: `Expense ${id} deleted successfully` };
+  deleteById = async (dto: GetExpenseByIdDto): Promise<{ success: boolean }> => {
+    try {
+      //throws on error || if expense does not belong to authenticated user, not found, etc..
+      await this.getById({ expenseId: dto.expenseId, userId: dto.userId }); //throws on error
+      const destroyed = await this.expenseRepository.deleteExpenseById(dto);
+      return { success: destroyed };
+    } catch (error) {
+       if (error instanceof CustomError) throw error;
+      throw CustomError.internalServer(
+        "Error deleting the expense with id " + dto.expenseId,
+      );
+    }
   };
 }
