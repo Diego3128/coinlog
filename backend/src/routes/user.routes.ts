@@ -15,7 +15,12 @@ export class UserRoutes{
         const userService: IUserService = new UserService(userRepository);
         const userController = new UserController(userService);
 
-        router.get("", userController.getUser );
+        router.get("", userController.getUser ); // get the currently authenticated user
+
+        router.post("/update-password", userController.updateUserPassword ); // update password of currently authenticated user
+
+        router.post("/check-password", userController.checkUserPassword ); // checks if the a raw password matches with the password hash of the authenticated user
+
         return router;
     }
 }

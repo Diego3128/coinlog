@@ -1,5 +1,5 @@
 import { CreatedAccountResponseDto } from "../../dtos/auth/created-account-response.dto";
-import { UserResponseDto } from "../../dtos/user/user-response.dto";
+import { UserResponseDto } from "../../dtos/user/response/user-response.dto";
 import User from "../../models/User";
 
 export class UserMapper {
