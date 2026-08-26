@@ -1,25 +1,21 @@
-import { CreateBudgetDto } from "../../dtos/budget/create-budget.dto";
-import { FilterBudgetDto } from "../../dtos/budget/filter-budget.dto";
-import { UpdateBudgetDto } from "../../dtos/budget/update-budget.dto";
-import Budget from "../../models/Budget";
+import { GetBudgetByIdDto } from "../../dtos";
+import { CreateBudgetDto } from "../../dtos/budget/request/create-budget.dto";
+import { FilterBudgetDto } from "../../dtos/budget/request/filter-budget.dto";
+import { UpdateBudgetDto } from "../../dtos/budget/request/update-budget.dto";
+import { BudgetResponseDto } from "../../dtos/budget/response/budget-response.dto";
+import { Pagination } from "../../types/Pagination";
 
 export interface IBudgetService {
   getAllBudgets: (filterDto: FilterBudgetDto) => Promise<{
-    data: Budget[];
-    pagination: {
-      count: number;
-      totalCount: number;
-      page: number;
-      totalPages: number;
-      limit: number;
-    };
+    data: BudgetResponseDto[];
+    pagination: Pagination;
   }>;
 
-  createBudget: (data: CreateBudgetDto) => Promise<Budget>;
+  createBudget: (data: CreateBudgetDto) => Promise<BudgetResponseDto>;
 
-  getBudgetById: (id: number) => Promise<Budget>;
+  getBudgetById: (dto: GetBudgetByIdDto) => Promise<BudgetResponseDto>;
 
-  updateBudgetById: (id: number, updateDto: UpdateBudgetDto) => Promise<Budget>;
+  updateBudgetById: (id: number, updateDto: UpdateBudgetDto) => Promise<BudgetResponseDto>;
 
-  deleteBudgetById: (id: number) => Promise<Budget>;
+  deleteBudgetById: (dto: GetBudgetByIdDto) => Promise<BudgetResponseDto>;
 }

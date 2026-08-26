@@ -215,11 +215,11 @@ export class AuthService implements IAuthService {
   private generateTokens = async (userId: number) => {
     const accessToken = await JwtAdapter.generateAccessToken(
       { id: userId },
-      "30m",
+      // "30m",
     );
     const refreshToken = await JwtAdapter.generateRefreshToken(
       { id: userId },
-      "5d",
+      // "5d",
     );
     return { accessToken, refreshToken };
   };

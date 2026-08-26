@@ -1,4 +1,3 @@
-import { type Request } from "express";
 import { AuthenticatedRequest } from "./auth/AuthenticatedRequest";
 
 /**

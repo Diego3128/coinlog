@@ -4,6 +4,8 @@ import { environments } from "../envs/envs";
 export class JwtAdapter {
   private static readonly JWT_SECRET = environments.JWT_SECRET;
   private static readonly REFRESH_SECRET = environments.REFRESH_SECRET;
+  private static readonly REFRESH_SECRET_LIFE = `${environments.REFRESH_TOKEN_LIFE}d` as SignOptions["expiresIn"];
+  private static readonly ACCESS_TOKEN_LIFE = `${environments.ACCESS_TOKEN_LIFE}m` as SignOptions["expiresIn"];
 
   /**
    * Creates refresh token with a default duration of 5 days
@@ -12,7 +14,7 @@ export class JwtAdapter {
    */
   static async generateRefreshToken(
     payload: Record<string, any>,
-    duration: SignOptions["expiresIn"] = "5d",
+    duration: SignOptions["expiresIn"] = JwtAdapter.REFRESH_SECRET_LIFE,
   ): Promise<string | null> {
     return new Promise((resolve) => {
       jwt.sign(
@@ -43,7 +45,7 @@ export class JwtAdapter {
    */
   static async generateAccessToken(
     payload: Record<string, any>,
-    duration: SignOptions["expiresIn"] = "15m",
+    duration: SignOptions["expiresIn"] = JwtAdapter.ACCESS_TOKEN_LIFE,
   ): Promise<string | null> {
     return new Promise((resolve) => {
       jwt.sign(

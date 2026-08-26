@@ -1,27 +1,20 @@
 import { CreateExpenseDto, UpdateExpenseDto } from "../../dtos";
-import { FilterBudgetDto } from "../../dtos/budget/filter-budget.dto";
-import Expense from "../../models/Expense";
+import { FilterBudgetDto } from "../../dtos/budget/request/filter-budget.dto";
+import { GetExpenseByIdDto } from "../../dtos/expense/request/get-expense-by-id.dto";
+import { ExpenseResponseDto } from "../../dtos/expense/response/expense-response.dto";
+import { Pagination } from "../../types/Pagination";
 
 export interface IExpenseService {
-  getAll: (budgetId: number, filterDto: FilterBudgetDto) => Promise<{
-    data: Expense[];
-    pagination: {
-      count: number;
-      totalCount: number;
-      page: number;
-      totalPages: number;
-      limit: number;
-    };
+  getAll: ( filterDto: FilterBudgetDto) => Promise<{
+    data: ExpenseResponseDto[];
+    pagination: Pagination;
   }>;
 
-  getById: (id: number) => Promise<Expense>;
+  getById: (dto: GetExpenseByIdDto) => Promise<ExpenseResponseDto>;
 
-  createExpense: (budgetId: number, createExpenseDto: CreateExpenseDto) => Promise<Expense>;
+  createExpense: (dto: CreateExpenseDto) => Promise<ExpenseResponseDto>;
 
-  updateById: (
-    id: number,
-    updateExpenseDto: UpdateExpenseDto,
-  ) => Promise<Expense>;
+  updateById: (updateExpenseDto: UpdateExpenseDto) => Promise<ExpenseResponseDto>;
 
-  deleteById: (id: number) => Promise<{ message: string }>;
+  deleteById: (dto: GetExpenseByIdDto) => Promise<{ success: boolean }>;
 }
