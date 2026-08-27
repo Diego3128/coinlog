@@ -1,5 +1,4 @@
 import { CustomError } from "../../../errors/CustomError";
-import Budget from "../../../models/Budget";
 
 export class FilterBudgetDto {
   public readonly userId: number;
@@ -8,6 +7,13 @@ export class FilterBudgetDto {
   public readonly sortBy: string;
   public readonly order: "ASC" | "DESC";
   public readonly name?: string;
+
+  private static readonly ALLOWED_SORT_COLUMNS = [
+    "name",
+    "amount",
+    "createdAt",
+    "updatedAt",
+  ];
 
   private constructor(data: {
     page: number;
@@ -27,7 +33,7 @@ export class FilterBudgetDto {
 
   static create(
     query: { [key: string]: any } = {},
-    userId: number,
+    userId: any,
   ): [CustomError?, FilterBudgetDto?] {
     const {
       page = 1,
@@ -52,7 +58,7 @@ export class FilterBudgetDto {
     }
 
     // 3. Validate if the column exists in the sequelize model (Budget)
-    const validColumns = Object.keys(Budget.getAttributes());
+    const validColumns = FilterBudgetDto.ALLOWED_SORT_COLUMNS;
     if (!validColumns.includes(sortBy)) {
       return [
         CustomError.badRequest(
@@ -62,8 +68,13 @@ export class FilterBudgetDto {
     }
 
     // 4. Validate user identity
-    if (!userId || isNaN(userId)) {
-      return [CustomError.badRequest(`userId is missing or invalid`)];
+    const parsedUserId = parseInt(userId);
+    if (!userId) {
+      return [CustomError.unAuthorized(`userId is missing`)];
+    }
+
+    if (parsedUserId < 1 || isNaN(parsedUserId)) {
+      return [CustomError.unAuthorized(`userId is invalid`)];
     }
 
     return [
@@ -73,7 +84,7 @@ export class FilterBudgetDto {
         limit: parsedLimit,
         sortBy: sortBy,
         order: normalizedOrder as "ASC" | "DESC",
-        userId: userId,
+        userId: parsedUserId,
         name: name ? String(name).trim() : undefined, //optional name column for 'like' filter
       }),
     ];

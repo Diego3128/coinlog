@@ -1,3 +1,0 @@
-describe("My first test", ()=> {
-
-});

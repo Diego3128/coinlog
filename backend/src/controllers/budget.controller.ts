@@ -61,7 +61,7 @@ export class BudgetController {
         await this.budgetService.createBudget(createBudgetDto);
       const response: ApiResponse<BudgetResponseDto> = {
         ok: true,
-        code: 200,
+        code: 201,
         data: budget,
       };
       return res.status(201).json(response);
