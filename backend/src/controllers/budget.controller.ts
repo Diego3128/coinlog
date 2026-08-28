@@ -107,7 +107,7 @@ export class BudgetController {
       );
       if (budgetError) throw budgetError;
       const result: BudgetResponseDto =
-        await this.budgetService.updateBudgetById(budgetId, updateBudgetDto);
+        await this.budgetService.updateBudgetById(updateBudgetDto);
       const response: ApiResponse<BudgetResponseDto> = {
         ok: true,
         code: 200,

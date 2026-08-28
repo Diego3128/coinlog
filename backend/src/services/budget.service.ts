@@ -60,12 +60,11 @@ export class BudgetService implements IBudgetService {
   };
 
   updateBudgetById = async (
-    id: number,
     updateBudgetDto: UpdateBudgetDto,
   ): Promise<BudgetResponseDto> => {
     try {
       const budget = await this.budgetRepository.updateBudgetById(updateBudgetDto);
-      if (!budget) throw CustomError.notFound(`Budget with id '${id}' not found`);
+      if (!budget) throw CustomError.notFound(`Budget with id '${updateBudgetDto.id}' not found`);
       return BudgetMapper.budgetEntityToBudgetResponseDto(budget);
     } catch (error) {
       if(error instanceof CustomError) throw error;

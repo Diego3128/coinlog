@@ -1,10 +1,10 @@
 import { createRequest, createResponse } from "node-mocks-http";
-import { budgets } from "../mocks/budgets";
-import { BudgetController } from "../../controllers/budget.controller";
-import { IBudgetService } from "../../services/interfaces/budget.service.interface";
-import { AuthenticatedRequest } from "../../types/auth/AuthenticatedRequest";
-import { BudgetResponseDto } from "../../dtos";
-import { BudgetIdRequest } from "../../types/BudgetIdRequest";
+import { budgets } from "../../mocks/budgets";
+import { BudgetController } from "../../../controllers/budget.controller";
+import { IBudgetService } from "../../../services/interfaces/budget.service.interface";
+import { AuthenticatedRequest } from "../../../types/auth/AuthenticatedRequest";
+import { BudgetResponseDto } from "../../../dtos";
+import { BudgetIdRequest } from "../../../types/BudgetIdRequest";
 
 describe("BudgetController", () => {
   let mockedBudgetService: jest.Mocked<IBudgetService>;
