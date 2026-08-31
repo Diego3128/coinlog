@@ -20,17 +20,27 @@ export class UpdateExpenseDto {
 
   static create(
     object: { [key: string]: any } = {},
-    expenseId: number,
-    userId: number
+    expenseId: any,
+    userId: any,
   ): [CustomError?, UpdateExpenseDto?] {
     const { name, amount } = object;
 
-    if (!userId || isNaN(userId) || userId < 0) {
-      return [CustomError.badRequest("userId is missing or invalid")];
+    const parsedUserId = parseInt(userId);
+    if (!userId) {
+      return [CustomError.unAuthorized(`userId is missing`)];
     }
 
-    if (!expenseId || isNaN(expenseId) || expenseId < 0) {
-      return [CustomError.badRequest("expenseId is missing or invalid")];
+    if (parsedUserId < 1 || isNaN(parsedUserId)) {
+      return [CustomError.unAuthorized(`userId is invalid`)];
+    }
+
+    const parsedExpenseId = parseInt(expenseId);
+    if (!expenseId) {
+      return [CustomError.badRequest(`expenseId is missing`)];
+    }
+
+    if (parsedExpenseId < 1 || isNaN(parsedExpenseId)) {
+      return [CustomError.badRequest(`expenseId is invalid`)];
     }
 
     if (!name && amount === undefined) {
@@ -72,7 +82,10 @@ export class UpdateExpenseDto {
       validatedAmount = parsedAmount;
     }
 
-    return [undefined, new UpdateExpenseDto({name: name, amount: amount, expenseId, userId})];
+    return [
+      undefined,
+      new UpdateExpenseDto({ name: validatedName, amount: validatedAmount, expenseId: parsedExpenseId, userId: parsedUserId }),
+    ];
   }
 
   get values() {

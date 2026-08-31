@@ -2,12 +2,12 @@ import {
   FilterExpenseDto,
   CreateExpenseDto,
   UpdateExpenseDto,
+  BudgetResponseDto,
 } from "../dtos";
 import { GetExpenseByIdDto } from "../dtos/expense/request/get-expense-by-id.dto";
 import { ExpenseResponseDto } from "../dtos/expense/response/expense-response.dto";
 import { CustomError } from "../errors/CustomError";
 import { ExpenseMapper } from "../mappers/expense/expense.mapper";
-import Expense from "../models/Expense";
 import { IExpenseRepository } from "../repositories/interfaces/expense.repository.interface";
 import { Pagination } from "../types/Pagination";
 import { IBudgetService } from "./interfaces/budget.service.interface";
@@ -48,7 +48,7 @@ export class ExpenseService implements IExpenseService {
   ): Promise<ExpenseResponseDto> => {
     try {
       //validates if budget exists & belongs to current user
-      const existingBudget = await this.budgetService.getBudgetById({
+      const existingBudget: BudgetResponseDto = await this.budgetService.getBudgetById({
         id: dto.budgetId,
         userId: dto.userId,
       }); //throws CustomError 404

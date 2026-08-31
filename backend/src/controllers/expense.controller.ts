@@ -36,7 +36,6 @@ export class ExpenseController {
         budgetId,
         req.userId,
       );
-      console.log({ error, filterDto });
       if (error) throw error;
 
       const result: {
@@ -71,7 +70,7 @@ export class ExpenseController {
         await this.expenseService.createExpense(createDto);
       const response: ApiResponse<ExpenseResponseDto> = {
         ok: true,
-        code: 200,
+        code: 201,
         data: expense,
       };
       return res.status(201).json(response);

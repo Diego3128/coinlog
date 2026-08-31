@@ -14,20 +14,27 @@ export class GetExpenseByIdDto {
     userId: any,
   ): [CustomError?, GetExpenseByIdDto?] {
 
-    if (!userId || !expenseId) {
-      return [CustomError.badRequest("userId and expenseId are required")];
+    const parsedExpenseId = parseInt(expenseId);
+    if (!parsedExpenseId) {
+      return [CustomError.badRequest(`expenseId is missing`)];
     }
 
-    const parsedExpenseId = Number(expenseId);
-    if (isNaN(parsedExpenseId) || parsedExpenseId <= 0) {
-      return [CustomError.badRequest("expenseId is missing or invalid")];
+    if (parsedExpenseId < 1 || isNaN(parsedExpenseId)) {
+      return [CustomError.badRequest(`expenseId is invalid`)];
     }
 
-    const parsedUserId = Number(userId);
-    if (isNaN(parsedUserId) || parsedUserId <= 0) {
-      return [CustomError.badRequest("userId is missing or invalid")];
+    const parsedUserId = parseInt(userId);
+    if (!userId) {
+      return [CustomError.unAuthorized(`userId is missing`)];
     }
 
-    return [undefined, new GetExpenseByIdDto({ expenseId, userId })];
+    if (parsedUserId < 1 || isNaN(parsedUserId)) {
+      return [CustomError.unAuthorized(`userId is invalid`)];
+    }
+
+    return [
+      undefined,
+      new GetExpenseByIdDto({ expenseId: parsedExpenseId, userId: parsedUserId }),
+    ];
   }
 }
