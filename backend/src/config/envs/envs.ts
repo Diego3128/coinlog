@@ -6,6 +6,7 @@ config({ quiet: true });
 
 export const environments = {
     PROD: get("PROD").required().asBool(),
+    TESTING: get("TESTING").required().asBool(),
     PORT: get("PORT").required().asPortNumber(),
     FRONTED_URL: get("FRONTED_URL").required().asString(),
     POSTGRE_DB_HOST: get("POSTGRE_DB_HOST").required().asString(),
@@ -26,7 +27,7 @@ export const environments = {
     // CLOUDINARY_API_SECRET: get("CLOUDINARY_API_SECRET").required().asString(),
 
 };
-if (!environments.PROD) {
+if (!environments.PROD && !environments.TESTING) {
     ColoredLog.info(JSON.stringify(environments));
 }
 //NO NEED FOR SINGLETON

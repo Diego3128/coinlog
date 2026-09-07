@@ -8,6 +8,7 @@
   "main": "index.js",
   "scripts": {
     "test": "jest",
+    "test:coverage": "jest --coverage",
     "build": "tsc",
     "dev:nodemon": "nodemon --exec tsx src/index.ts",
     "dev:nodemon:api": "nodemon --exec tsx src/index.ts --api",

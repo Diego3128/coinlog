@@ -23,8 +23,8 @@ export class AuthController {
   ) => {
     try {
       const [error, createUserDto] = CreateUserDto.create(req.body);
-      if (error) this.handleError(error, res);
-      const result = await this.authService.createNewAccount(createUserDto);
+      if (error) throw(error);
+      const result: CreatedAccountResponseDto = await this.authService.createNewAccount(createUserDto);
       const response = {
         ok: true,
         code: 201,
@@ -65,7 +65,7 @@ export class AuthController {
     try {
       const jwt = (req.headers.authorization ?? "").split(" ")?.at(1) ?? "";
       if (!jwt) throw CustomError.unAuthorized("jwt not included");
-      const result = await this.authService.renewAccessToken(jwt);
+      const result: LoginResponseDto = await this.authService.renewAccessToken(jwt);
       // console.log({result});
       return res.json({ code: 200, ok: true, data: result });
     } catch (error) {
