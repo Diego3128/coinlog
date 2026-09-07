@@ -13,8 +13,8 @@ export class CreateExpenseDto {
 
   static create(
     object: { [key: string]: any } = {},
-    budgetId: number,
-    userId: number,
+    budgetId: any,
+    userId: any,
   ): [CustomError?, CreateExpenseDto?] {
     const { name, amount } = object;
 
@@ -33,17 +33,27 @@ export class CreateExpenseDto {
       return [CustomError.badRequest("Amount must be a valid positive number")];
     }
 
-    if (!userId || isNaN(userId) || userId < 0) {
-      return [CustomError.badRequest("userId is missing or invalid")];
+    const parsedUserId = parseInt(userId);
+    if (!userId) {
+      return [CustomError.unAuthorized(`userId is missing`)];
     }
 
-    if (!budgetId || isNaN(budgetId) || budgetId < 0) {
-      return [CustomError.badRequest("budgetId is missing or invalid")];
+    if (parsedUserId < 1 || isNaN(parsedUserId)) {
+      return [CustomError.unAuthorized(`userId is invalid`)];
+    }
+
+    const parsedBudgetId = parseInt(budgetId);
+    if (!parsedBudgetId) {
+      return [CustomError.badRequest(`budgetId is missing`)];
+    }
+
+    if (parsedBudgetId < 1 || isNaN(parsedBudgetId)) {
+      return [CustomError.badRequest(`budgetId is invalid`)];
     }
 
     return [
       undefined,
-      new CreateExpenseDto(name.trim(), parsedAmount, budgetId, userId),
+      new CreateExpenseDto(name.trim(), parsedAmount, parsedBudgetId, parsedUserId),
     ];
   }
 }

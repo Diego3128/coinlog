@@ -11,14 +11,21 @@ export const validateExpenseId = (
   next: NextFunction,
   expenseIdValue: string,
 ) => {
-  const [error, getExpenseByIdDto] = GetExpenseByIdDto.create(expenseIdValue, req.userId)
+  try {
+    const [error, getExpenseByIdDto] = GetExpenseByIdDto.create(
+      expenseIdValue,
+      req.userId,
+    );
 
-  if (error) {
+    if (error) {
+      return handleError(error, res);
+    }
+
+    (req as ExpenseIdRequest).expenseId = getExpenseByIdDto.expenseId;
+    next();
+  } catch (error) {
     return handleError(error, res);
   }
-
-  (req as ExpenseIdRequest).expenseId = getExpenseByIdDto.expenseId;
-  next();
 };
 
 

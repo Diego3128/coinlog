@@ -61,7 +61,7 @@ export class BudgetController {
         await this.budgetService.createBudget(createBudgetDto);
       const response: ApiResponse<BudgetResponseDto> = {
         ok: true,
-        code: 200,
+        code: 201,
         data: budget,
       };
       return res.status(201).json(response);
@@ -107,7 +107,7 @@ export class BudgetController {
       );
       if (budgetError) throw budgetError;
       const result: BudgetResponseDto =
-        await this.budgetService.updateBudgetById(budgetId, updateBudgetDto);
+        await this.budgetService.updateBudgetById(updateBudgetDto);
       const response: ApiResponse<BudgetResponseDto> = {
         ok: true,
         code: 200,

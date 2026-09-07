@@ -1,5 +1,4 @@
 import { CustomError } from "../../../errors/CustomError";
-import Expense from "../../../models/Expense";
 
 export class FilterExpenseDto {
   public readonly userId: number;
@@ -28,10 +27,17 @@ export class FilterExpenseDto {
     this.name = data.name
   }
 
+    private static readonly ALLOWED_SORT_COLUMNS = [
+    "name",
+    "amount",
+    "createdAt",
+    "updatedAt",
+  ];
+
   static create(
     query: { [key: string]: any } = {},
-    budgetId: number,
-    userId: number,
+    budgetId: any,
+    userId: any,
   ): [CustomError?, FilterExpenseDto?] {
     const {
       page = 1,
@@ -41,12 +47,22 @@ export class FilterExpenseDto {
       name,
     } = query;
 
-    if (!userId || isNaN(userId)) {
-      return [CustomError.badRequest("userId is missing or invalid")];
+    const parsedUserId = parseInt(userId);
+    if (!userId) {
+      return [CustomError.unAuthorized(`userId is missing`)];
     }
 
-    if (!budgetId || isNaN(budgetId)) {
-      return [CustomError.badRequest("budgetId is missing or invalid")];
+    if (parsedUserId < 1 || isNaN(parsedUserId)) {
+      return [CustomError.unAuthorized(`userId is invalid`)];
+    }
+
+    const parsedBudgetId = parseInt(budgetId);
+    if (!parsedBudgetId) {
+      return [CustomError.badRequest(`budgetId is missing`)];
+    }
+
+    if (parsedBudgetId < 1 || isNaN(parsedBudgetId)) {
+      return [CustomError.badRequest(`budgetId is invalid`)];
     }
 
     const parsedPage = Number(page);
@@ -61,11 +77,11 @@ export class FilterExpenseDto {
       return [CustomError.badRequest("Order must be either ASC or DESC")];
     }
 
-    const validColumns = Object.keys(Expense.getAttributes()).filter(c=> c !== "budgetId"); //budgetId should not be passed in the query
-    if (!validColumns.includes(sortBy)) {
+    // const validColumns = Object.keys(Expense.getAttributes()).filter(c=> c !== "budgetId"); //budgetId should not be passed in the query
+    if (!FilterExpenseDto.ALLOWED_SORT_COLUMNS.includes(sortBy)) {
       return [
         CustomError.badRequest(
-          `Invalid sortBy column '${sortBy}'. Allowed fields: ${validColumns.join(", ")}`,
+          `Invalid sortBy column '${sortBy}'. Allowed fields: ${FilterExpenseDto.ALLOWED_SORT_COLUMNS.join(", ")}`,
         ),
       ];
     }
@@ -78,8 +94,8 @@ export class FilterExpenseDto {
         sortBy: sortBy,
         order: normalizedOrder as "ASC" | "DESC",
         name: name ? String(name).trim() : undefined,
-        budgetId: budgetId,
-        userId: userId,
+        budgetId: parsedBudgetId,
+        userId: parsedUserId,
       }),
     ];
   }

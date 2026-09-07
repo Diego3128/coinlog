@@ -13,17 +13,27 @@ export class UpdateBudgetDto {
 
   static create(
     object: { [key: string]: any } = {},
-    id: number,
-    userId: number,
+    id: any,
+    userId: any,
   ): [CustomError?, UpdateBudgetDto?] {
     const { name, amount } = object;
 
-    if (!id || isNaN(id)) {
-      return [CustomError.badRequest("The budgetId is missing or invalid")];
+    if (!id) {
+      return [CustomError.badRequest("The budgetId is missing")];
     }
 
-    if (!userId || isNaN(userId)) {
-      return [CustomError.badRequest("The userId is missing or invalid")];
+    const parsedBudgetId = parseInt(id);
+    if (parsedBudgetId < 1 || isNaN(parsedBudgetId)) {
+      return [CustomError.badRequest(`parsedBudgetId is invalid`)];
+    }
+
+    const parsedUserId = parseInt(userId);
+    if (!userId) {
+      return [CustomError.unAuthorized(`userId is missing`)];
+    }
+
+    if (parsedUserId < 1 || isNaN(parsedUserId)) {
+      return [CustomError.unAuthorized(`userId is invalid`)];
     }
 
     // At least one field should be passed for the update
@@ -65,7 +75,7 @@ export class UpdateBudgetDto {
 
     return [
       undefined,
-      new UpdateBudgetDto(id, userId, validatedName, validatedAmount),
+      new UpdateBudgetDto(id, parsedUserId, validatedName, validatedAmount),
     ];
   }
 

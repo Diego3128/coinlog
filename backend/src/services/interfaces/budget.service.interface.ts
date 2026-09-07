@@ -15,7 +15,7 @@ export interface IBudgetService {
 
   getBudgetById: (dto: GetBudgetByIdDto) => Promise<BudgetResponseDto>;
 
-  updateBudgetById: (id: number, updateDto: UpdateBudgetDto) => Promise<BudgetResponseDto>;
+  updateBudgetById: (updateDto: UpdateBudgetDto) => Promise<BudgetResponseDto>;
 
   deleteBudgetById: (dto: GetBudgetByIdDto) => Promise<BudgetResponseDto>;
 }

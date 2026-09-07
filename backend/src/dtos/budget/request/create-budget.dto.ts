@@ -7,7 +7,7 @@ export class CreateBudgetDto {
         public readonly userId: number
     ) { }
 
-    static create(object: { [key: string]: any } = {}, userId: number): [CustomError?, CreateBudgetDto?] {
+    static create(object: { [key: string]: any } = {}, userId: any): [CustomError?, CreateBudgetDto?] {
         const { name, amount } = object;
 
         if (!name || typeof name !== 'string' || name.trim().length === 0) {
@@ -27,10 +27,15 @@ export class CreateBudgetDto {
             return [CustomError.badRequest('Amount must be a valid positive number')];
         }
 
-        if(!userId || isNaN(userId)){
-            return [CustomError.badRequest('userId is missing or invalid')];
+        const parsedUserId = parseInt(userId);
+        if (!userId) {
+        return [CustomError.unAuthorized(`userId is missing`)];
         }
 
-        return [undefined, new CreateBudgetDto(name.trim(), parsedAmount, userId)];
+        if (parsedUserId < 1 || isNaN(parsedUserId)) {
+        return [CustomError.unAuthorized(`userId is invalid`)];
+        }
+
+        return [undefined, new CreateBudgetDto(name.trim(), parsedAmount, parsedUserId)];
     }
 };
