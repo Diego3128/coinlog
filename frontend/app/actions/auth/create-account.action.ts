@@ -1,6 +1,6 @@
 "use server";
 import { validateData } from "@/src/lib/validation";
-import { RegisterSchema, RegisterType } from "@/src/schemas/auth";
+import { RegisterSchema, RegisterType } from "@/src/schemas/auth/RegisterSchema";
 
 export type FormFields = {
   firstName?: string;
@@ -66,7 +66,7 @@ export const createAccount = async (
       };
     } else {
       //validate error response
-      let errorMessage = "Error creating you account.";
+      let errorMessage = "Error creating your account.";
       if(typeof res.error === "string") errorMessage = res.error;
       return {
         success: false,

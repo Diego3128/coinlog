@@ -20,7 +20,7 @@ export default function layout({ children }: LayoutProps<"/auth">) {
         </div>
       </div>
       <div className="md:flex-1/2  md:min-h-dvh md:flex md:items-center md:justify-center px-3 md:px-6 pb-10">
-        <div className="w-full max-w-2xl bg-base-100 py-2 border border-accent rounded-lg">
+        <div className="relative min-h-60 w-full max-w-2xl bg-base-100 py-2 border border-accent rounded-lg">
           {children}
         </div>
       </div>
