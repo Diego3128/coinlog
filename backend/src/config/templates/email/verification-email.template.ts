@@ -1,3 +1,5 @@
+import { environments } from "../../envs/envs";
+
 export interface VerificationEmailOptions {
   subject?: string;
   token: string;
@@ -40,14 +42,14 @@ export const verificationEmailTemplate = ({
                       Hello, ${username}! 👋
                     </h1>
                     <p style="margin: 0 0 24px 0; font-size: 15px; line-height: 1.6; color: #64748b;">
-                      Thank you for signing up for Coinlog. To complete your account creation and verify your identity, please enter the following verification code:
+                      Thank you for signing up for Coinlog. To complete your account creation and verify your identity, please click the button below:
                     </p>
 
                     <!-- Token Box -->
-                    <div style="background-color: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px; padding: 20px; text-align: center; margin-bottom: 24px;">
-                      <span style="font-family: 'Courier New', Courier, monospace; font-size: 32px; font-weight: 700; letter-spacing: 8px; color: #1e293b; display: inline-block;">
-                        ${token}
-                      </span>
+                    <div style="background-color: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 8px;  text-align: center; margin-bottom: 24px;">
+                      <a href="${environments.FRONTED_URL}/auth/confirm-account?t=${token}" style="font-family: 'Courier New', Courier, monospace; padding: 20px; font-size: 20px; display: block; padding: 20px 5px; font-weight: 700; letter-spacing: 8px; color: #1e293b; text-decoration: none;">
+                        Confirm Account
+                      </a>
                     </div>
 
                     <p style="margin: 0; font-size: 13px; line-height: 1.5; color: #94a3b8;">
