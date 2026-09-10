@@ -5,10 +5,12 @@ import Header from "../components/shared/Header";
 export default function layout({ children }: LayoutProps<"/auth">) {
   return (
     <div className="md:flex">
-      <div className="md:flex-1/2 pt-3 relative">
-        <Header />
+      <div className="md:flex-1/2 relative">
+        <div className="flex justify-center py-5">
+          <Header />
+        </div>
         <div className="hidden md:block  absolute bottom-0 left-0 w-full ">
-          <div className="none md:block md:absolute z-10 bottom-20 left-0 w-full h-80">
+          <div className="md:block md:absolute z-10 bottom-20 left-0 w-full h-80">
             <FloatingIcons />
           </div>
 
