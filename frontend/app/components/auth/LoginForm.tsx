@@ -3,7 +3,7 @@
 import { LoginUser } from "@/app/actions/auth/log-in.action";
 import { SubmitEvent, useState } from "react";
 import ErrorStack from "../shared/ErrorStack";
-import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 export default function LoginForm() {
   const [loginForm, setLoginForm] = useState<{
@@ -13,6 +13,8 @@ export default function LoginForm() {
 
   const [errors, setErrors] = useState<string[]>([]);
 
+  const router = useRouter();
+
   const handleSubmit = async (e: SubmitEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrors([]);
@@ -21,12 +23,12 @@ export default function LoginForm() {
     formData.set("password", loginForm.password);
 
     const res = await LoginUser(formData);
-    
-    if(!res.success){
+
+    if (!res.success) {
       setErrors(res.errors);
-    }else{
-      toast("Loging you in...");
+    } else {
       //redirect
+      router.replace("/admin");
     }
   };
 

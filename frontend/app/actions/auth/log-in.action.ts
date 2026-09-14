@@ -57,7 +57,7 @@ export const LoginUser = async (formData: FormData): Promise<LoginResult> => {
       };
     } else {
       //validate error response
-      let errorMessage = "Something went wront trying to log you in";
+      let errorMessage = "Something went wrong trying to log you in";
       if (typeof res.error === "string") errorMessage = res.error;
       return {
         success: false,
