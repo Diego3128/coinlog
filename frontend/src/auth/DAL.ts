@@ -1,14 +1,14 @@
-"use server";
-import { redirect } from "next/navigation";
+import "server-only";
+
 import { parseAsync } from "valibot";
 import { UserSchema, UserType } from "../schemas/auth/UserSchema";
+import { getAuthTokens } from "../lib/sessions";
+import { cache } from "react";
 
-export const getUserObject = async ({
-  accessToken,
-}: {
-  accessToken: string;
-}): Promise<null | UserType> => {
+export const getUserObject = cache(async (): Promise<null | UserType> => {
   try {
+    const { accessToken = "" } = await getAuthTokens();
+
     //validate access_token
     const URL = `${process.env.API_URL}/user`;
     const req = await fetch(URL, {
@@ -27,7 +27,7 @@ export const getUserObject = async ({
   } catch (e) {
     return null;
   }
-};
+});
 
 // export const generateAccessToken = async ({
 //   refreshToken,
